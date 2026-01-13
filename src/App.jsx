@@ -14,11 +14,12 @@ import {
   Facebook,
   Instagram,
 } from 'lucide-react';
+import Banner from './components/Banner/Banner';
 
 export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
+  const [bannerVariant, setBannerVariant] = useState('A'); // A = oficial (intacto)
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -62,6 +63,13 @@ export default function App() {
   // cache-busting query for local images
   const v = `?v=${__BUILD_TIME__}`;
 
+  const toSectionId = (label) =>
+    label
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // remove accents (áéíóúñ -> aeioun)
+      .replace(/ /g, '-');
+
   const scrollToSection = (id) => {
     setIsMenuOpen(false);
     const element = document.getElementById(id);
@@ -76,7 +84,7 @@ export default function App() {
   const whatsappMapText = encodeURIComponent(
     `Hola, quiero coordinar una cita en: Estanzuela – Barrio Cerrado Ecos del Lago, Areguá, Paraguay.\nMapa: ${mapsUrl}`
   );
-  const whatsappMapLink = `https://wa.me/595984167624?text=${whatsappMapText}`;
+  // const whatsappMapLink = `${whatsappLink}?text=${whatsappMapText}`; // (si lo querés usar luego)
 
   return (
     <div className="font-sans text-neutral-200 bg-black min-h-screen selection:bg-[#D4AF37] selection:text-black">
@@ -115,7 +123,7 @@ export default function App() {
               <button
                 key={item}
                 onClick={() =>
-                  scrollToSection(item.toLowerCase().replace(/ /g, '-').replace(/á/g, 'a'))
+                  scrollToSection(toSectionId(item))
                 }
                 className="text-xs uppercase tracking-widest text-neutral-400 hover:text-[#D4AF37] transition-colors duration-300 font-medium"
               >
@@ -148,7 +156,7 @@ export default function App() {
                 <button
                   key={item}
                   onClick={() =>
-                    scrollToSection(item.toLowerCase().replace(/ /g, '-').replace(/á/g, 'a'))
+                    scrollToSection(toSectionId(item))
                   }
                   className="text-left text-neutral-300 hover:text-[#D4AF37] py-2 border-b border-neutral-800 tracking-wider text-sm"
                 >
@@ -160,97 +168,43 @@ export default function App() {
         )}
       </nav>
 
-      {/* --- HERO SECTION --- */}
-      <section id="inicio" className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-black">
-        <div className="absolute inset-0 bg-black z-0">
-          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4AF37]/5 rounded-full blur-[120px]"></div>
-          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#D4AF37]/5 rounded-full blur-[120px]"></div>
+      {/* --- HERO SECTION (OFICIAL = Banner A, intacto) --- */}
+      <Banner
+        variant={bannerVariant}
+        base={base}
+        v={v}
+        whatsappLink={whatsappLink}
+        scrollToSection={scrollToSection}
+      />
 
-          {/* Marca de agua del logo */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <img
-              src={`${base}images/logoraimundo.png${v}`}
-              alt="Marca de agua - Logo Abg. Raimundo Fernández"
-              className="opacity-10 w-[70vw] max-w-[560px] object-contain select-none"
-            />
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full grid md:grid-cols-2 gap-12 items-center">
-          {/* Contenido Texto */}
-          <div className="space-y-8 order-2 md:order-1">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-[#D4AF37] rounded-sm bg-black/50 backdrop-blur-sm shadow-[0_0_10px_rgba(212,175,55,0.1)]">
-              <span className="w-2 h-2 bg-[#D4AF37] rounded-full animate-pulse"></span>
-              <span className="text-[#D4AF37] text-xs font-bold tracking-widest uppercase">
-                Matrícula C.S.J. N.º 66.875
-              </span>
-            </div>
-
-            <h1 className="text-4xl md:text-6xl font-bold font-serif leading-tight text-white">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B6914] via-[#D4AF37] to-[#FFD700]">
-                Soluciones Jurídicas en Derecho Penal y Consultoría Legal
-              </span>
-            </h1>
-
-            <p className="text-lg text-neutral-400 max-w-lg leading-relaxed border-l-4 border-[#D4AF37] pl-6 italic">
-              "Soy un defensor de la ley y de la vida. Acompaño a personas en situaciones complejas con estrategia
-              jurídica y dignidad humana."
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <a
-                href={whatsappLink}
-                className="px-8 py-4 bg-[#D4AF37] hover:bg-[#C5A028] text-black font-bold rounded-sm transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] text-center flex items-center justify-center gap-2 uppercase tracking-wide text-sm"
-              >
-                <Gavel className="w-5 h-5" />
-                Agendar Consulta
-              </a>
+      {/* Demo toggle (solo dev) */}
+      {import.meta.env.DEV && (
+        <div className="fixed bottom-24 left-6 z-50 bg-black/90 border border-[#D4AF37]/40 rounded-sm p-3 space-y-2 shadow-2xl">
+          <p className="text-[#D4AF37] text-[10px] uppercase tracking-widest font-bold">
+            Banner demo
+          </p>
+          <div className="flex gap-2">
+            {['A', 'B', 'C', 'D'].map((vKey) => (
               <button
-                onClick={() => scrollToSection('areas-de-practica')}
-                className="px-8 py-4 border border-neutral-700 hover:border-[#D4AF37] text-neutral-300 hover:text-[#D4AF37] rounded-sm font-semibold transition-all text-center uppercase tracking-wide text-sm"
+                key={vKey}
+                onClick={() => setBannerVariant(vKey)}
+                className={`px-3 py-1 text-[10px] border uppercase tracking-widest font-bold transition-colors ${
+                  bannerVariant === vKey
+                    ? 'bg-[#D4AF37] text-black border-[#D4AF37]'
+                    : 'border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37]/10'
+                }`}
               >
-                Ver Servicios
+                {vKey}
               </button>
-            </div>
-          </div>
-
-          {/* Imagen Hero */}
-          <div className="relative flex justify-center md:justify-end mt-10 md:mt-0 order-1 md:order-2">
-            <div className="relative w-72 h-80 md:w-[400px] md:h-[550px] p-2 bg-black border border-[#D4AF37]/30 shadow-2xl">
-              <div className="absolute top-4 -right-4 w-full h-full border border-[#D4AF37]/50 -z-10"></div>
-              <div className="absolute -bottom-4 -left-4 w-full h-full border border-[#D4AF37]/50 -z-10"></div>
-
-              <div className="w-full h-full bg-neutral-900 overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-700">
-                {/* show full image without cropping */}
-                <img
-                  key={__BUILD_TIME__}
-                  src={`${base}images/hero5.png${v}`}
-                  alt="Abg. Raimundo Fernández"
-                  className="w-full h-full object-contain object-center"
-                  onError={(e) => {
-                    console.warn('Hero image failed to load:', `${base}images/hero5.png${v}`);
-                    e.currentTarget.src =
-                      'https://images.unsplash.com/photo-1556157382-97eda2d62296?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-                  }}
-                />
-                <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/80 to-transparent p-6 pt-12">
-                  <div className="h-0.5 w-16 bg-[#D4AF37] mb-3"></div>
-                  <p className="text-white font-serif text-2xl font-bold">Abg. Raimundo Fernández</p>
-                  <p className="text-[#D4AF37] text-xs font-bold tracking-widest uppercase mt-1">
-                    Director & Fundador
-                  </p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-      </section>
+      )}
 
       {/* --- CINTA DE PRESTIGIO --- */}
       <div className="border-y border-[#D4AF37]/20 bg-neutral-900/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="text-center">
-            {/* changed: 15+ Años de Experiencia -> 100% Confidencialidad */}
             <h3 className="text-3xl font-bold text-white font-serif">100%</h3>
             <p className="text-xs text-[#D4AF37] uppercase tracking-widest mt-1">Confidencialidad</p>
           </div>
@@ -259,7 +213,7 @@ export default function App() {
             <p className="text-xs text-[#D4AF37] uppercase tracking-widest mt-1">Compromiso Ético</p>
           </div>
           <div className="text-center border-l border-neutral-800">
-            <h3 className="text-3xl font-bold text-white font-serif">3</h3>
+            <h3 className="text-3xl font-bold text.white font-serif">3</h3>
             <p className="text-xs text-[#D4AF37] uppercase tracking-widest mt-1">Continentes (Formación)</p>
           </div>
           <div className="text-center border-l border-neutral-800">
@@ -277,21 +231,18 @@ export default function App() {
               <h2 className="text-4xl font-serif font-bold text-white">
                 Trayectoria & <span className="text-[#D4AF37]">Vocación</span>
               </h2>
-              {/* Encabezado premium */}
               <div className="text-neutral-300">
                 <p className="font-serif text-xl font-bold">Abg. Raimundo Fernández</p>
                 <p className="text-sm text-[#D4AF37] font-bold tracking-widest">
                   Abogado | Matrícula C.S.J. N.º 66.875
                 </p>
               </div>
-              {/* Perfil profesional (resumen top) */}
               <p className="text-neutral-400 text-sm">
                 Abogado con formación jurídica nacional e internacional, cursando Masterado en Derecho Penal. Director de estudio
                 jurídico propio, con experiencia en asesoramiento legal estratégico, análisis normativo y representación judicial.
                 Formación complementaria en desarrollo económico, parques industriales y gestión pública en programas internacionales
                 en Taiwán, Israel y Estados Unidos.
               </p>
-              {/* Restored descriptive content */}
               <div className="space-y-6 text-neutral-400 leading-relaxed font-light">
                 <p>
                   Mi nombre es <strong>Abg. Raimundo Fernández</strong>. Soy un abogado penalista comprometido no
@@ -323,13 +274,12 @@ export default function App() {
               </div>
             </div>
 
-            {/* Replace right column card with hero2 image styled like hero1 */}
             <div className="md:col-span-5 relative flex justify-center md:justify-end">
               <div className="relative w-72 h-80 md:w-[380px] md:h-[520px] p-2 bg-black border border-[#D4AF37]/30 shadow-2xl">
                 <div className="absolute top-4 -right-4 w-full h-full border border-[#D4AF37]/50 -z-10"></div>
                 <div className="absolute -bottom-4 -left-4 w-full h-full border border-[#D4AF37]/50 -z-10"></div>
 
-                <div className="w-full h-full bg-neutral-900 overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-700">
+                <div className="w-full h-full bg-neutral-900 overflow-hidden relative transition-all duration-700">
                   <img
                     src={`${base}images/diploma.jpeg${v}`}
                     alt="Diploma - Abg. Raimundo Fernández"
@@ -351,7 +301,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Move Filosofía de Defensa below */}
           <div className="mt-16 relative">
             <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37] to-neutral-900 opacity-20 blur-2xl"></div>
             <div className="relative bg-neutral-950 border border-neutral-800 p-8 rounded-sm shadow-2xl">
@@ -373,7 +322,6 @@ export default function App() {
                   <BookOpen className="w-4 h-4 text-[#D4AF37]" />
                   <span>Análisis técnico minucioso</span>
                 </li>
-                {/* fixed: wrap Users icon and text inside a single list item */}
                 <li className="flex items-center gap-3">
                   <Users className="w-4 h-4 text-[#D4AF37]" />
                   <span>Acompañamiento familiar</span>
@@ -386,7 +334,6 @@ export default function App() {
 
       {/* --- ÁREAS DE PRÁCTICA --- */}
       <section id="areas-de-practica" className="py-24 bg-neutral-950 border-t border-neutral-900">
-        {/* fused background using hero4 */}
         <div
           className="absolute inset-x-0 -mt-24 h-64 md:h-80 opacity-70"
           style={{
@@ -403,9 +350,7 @@ export default function App() {
               <span className="text-[#D4AF37] tracking-[0.3em] uppercase text-xs font-bold">Mis Especialidades</span>
               <h2 className="text-3xl md:text-5xl font-serif font-bold text-white mt-3">Áreas de Práctica</h2>
             </div>
-            {/* Restore cards grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Card 1 - Penal */}
               <div className="group bg-black p-8 border border-neutral-900 hover:border-[#D4AF37] transition-all duration-500 hover:shadow-[0_0_30px_rgba(212,175,55,0.1)] relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-0 bg-[#D4AF37] group-hover:h-full transition-all duration-500"></div>
                 <Gavel className="w-10 h-10 text-[#D4AF37] mb-6" />
@@ -415,7 +360,6 @@ export default function App() {
                 </p>
               </div>
 
-              {/* Card 2 - Civil & Comercial */}
               <div className="group bg-black p-8 border border-neutral-900 hover:border-[#D4AF37] transition-all duration-500 hover:shadow-[0_0_30px_rgba(212,175,55,0.1)] relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-0 bg-[#D4AF37] group-hover:h-full transition-all duration-500"></div>
                 <Scale className="w-10 h-10 text-[#D4AF37] mb-6" />
@@ -425,42 +369,38 @@ export default function App() {
                 </p>
               </div>
 
-              {/* Card 3 - Niñez y Familia */}
               <div className="group bg-black p-8 border border-neutral-900 hover:border-[#D4AF37] transition-all duration-500 hover:shadow-[0_0_30px_rgba(212,175,55,0.1)] relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-0 bg-[#D4AF37] group-hover:h-full transition-all duration-500"></div>
                 <Users className="w-10 h-10 text-[#D4AF37] mb-6" />
-                <h4 className="text-xl font-bold text-white mb-3 font-serif">Niñez y Familia</h4>
-                <p className="text-neutral-500 text-sm leading-relaxed group-hover:text-neutral-400 transition-colors">
+                <h4 className="text-xl font-bold text.white mb-3 font-serif">Niñez y Familia</h4>
+                <p className="text-neutral-500 text.sm leading-relaxed group-hover:text-neutral-400 transition-colors">
                   Resolución de conflictos familiares priorizando la dignidad humana y los derechos del niño.
                 </p>
               </div>
 
-              {/* Card 4 - Asesoría Empresarial */}
               <div className="group bg-black p-8 border border-neutral-900 hover:border-[#D4AF37] transition-all duration-500 hover:shadow-[0_0_30px_rgba(212,175,55,0.1)] relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-0 bg-[#D4AF37] group-hover:h-full transition-all duration-500"></div>
                 <Briefcase className="w-10 h-10 text-[#D4AF37] mb-6" />
-                <h4 className="text-xl font-bold text-white mb-3 font-serif">Asesoría Empresarial</h4>
-                <p className="text-neutral-500 text-sm leading-relaxed group-hover:text-neutral-400 transition-colors">
+                <h4 className="text-xl font-bold text.white mb-3 font-serif">Asesoría Empresarial</h4>
+                <p className="text-neutral-500 text.sm leading-relaxed group-hover:text-neutral-400 transition-colors">
                   Consultoría estratégica para empresas, desarrollo de negocios y análisis normativo.
                 </p>
               </div>
 
-              {/* Extra services per provided list */}
               <div className="group bg-black p-8 border border-neutral-900 hover:border-[#D4AF37] transition-all duration-500 hover:shadow-[0_0_30px_rgba(212,175,55,0.1)] relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-0 bg-[#D4AF37] group-hover:h-full transition-all duration-500"></div>
                 <Briefcase className="w-10 h-10 text-[#D4AF37] mb-6" />
-                <h4 className="text-xl font-bold text-white mb-3 font-serif">Contratos y Consultoría Legal</h4>
-                <p className="text-neutral-500 text-sm leading-relaxed">
+                <h4 className="text-xl font-bold text.white mb-3 font-serif">Contratos y Consultoría Legal</h4>
+                <p className="text-neutral-500 text.sm leading-relaxed">
                   Redacción y revisión de contratos. Consultoría jurídica estratégica para personas y empresas.
                 </p>
               </div>
 
-              {/* FIXED: last card - Representación ante Fiscalías y Juzgados */}
               <div className="group bg-black p-8 border border-neutral-900 hover:border-[#D4AF37] transition-all duration-500 hover:shadow-[0_0_30px_rgba(212,175,55,0.1)] relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-0 bg-[#D4AF37] group-hover:h-full transition-all duration-500"></div>
                 <Gavel className="w-10 h-10 text-[#D4AF37] mb-6" />
-                <h4 className="text-xl font-bold text-white mb-3 font-serif">Representación ante Fiscalías y Juzgados</h4>
-                <p className="text-neutral-500 text-sm leading-relaxed">
+                <h4 className="text-xl font-bold text.white mb-3 font-serif">Representación ante Fiscalías y Juzgados</h4>
+                <p className="text-neutral-500 text.sm leading-relaxed">
                   Presencia activa y defensa técnica ante órganos judiciales y administrativos.
                 </p>
               </div>
@@ -479,10 +419,9 @@ export default function App() {
             <span className="text-[#D4AF37] font-bold text-sm tracking-widest uppercase mb-2">
               Excelencia Académica
             </span>
-            <h2 className="text-3xl md:text-5xl font-serif font-bold text-white">Formación Global</h2>
+            <h2 className="text-3xl md:text-5xl font-serif font-bold text.white">Formación Global</h2>
           </div>
 
-          {/* Masterado banner */}
           <div className="grid md:grid-cols-3 gap-8">
             <div className="col-span-1 md:col-span-3 bg-gradient-to-r from-neutral-900 to-black border border-[#D4AF37]/30 p-8 rounded-sm flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
               <div className="flex items-center gap-6">
@@ -490,7 +429,7 @@ export default function App() {
                   <BookOpen className="w-8 h-8" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-white font-serif">Masterado en Derecho Penal</h3>
+                  <h3 className="text-2xl font-bold text.white font-serif">Masterado en Derecho Penal</h3>
                   <p className="text-neutral-400">
                     Universidad Americana – Paraguay
                     <span className="text-[#D4AF37] text-xs font-bold px-2 py-0.5 border border-[#D4AF37] rounded ml-2">
@@ -501,55 +440,51 @@ export default function App() {
               </div>
               <div className="h-px w-full md:w-px md:h-16 bg-neutral-800"></div>
               <div className="text-center md:text-right">
-                <p className="text-neutral-500 text-sm">Base Jurídica</p>
-                <p className="text-white font-bold">Abogado (UPAP)</p>
+                <p className="text-neutral-500 text.sm">Base Jurídica</p>
+                <p className="text.white font-bold">Abogado (UPAP)</p>
               </div>
             </div>
 
-            {/* Internacional 1 - Taiwán */}
             <div className="bg-neutral-950 p-8 border-t-2 border-[#D4AF37] hover:bg-neutral-900 transition-colors">
               <div className="flex justify-between items-start mb-4">
-                <h4 className="text-xl font-bold text-white">Taiwán</h4>
+                <h4 className="text-xl font-bold text.white">Taiwán</h4>
                 <Globe className="text-[#D4AF37] w-5 h-5" />
               </div>
-              <p className="text-neutral-400 text-sm">Especialista en Parques Industriales y Desarrollo.</p>
+              <p className="text-neutral-400 text.sm">Especialista en Parques Industriales y Desarrollo.</p>
             </div>
 
-            {/* Internacional 2 - Israel */}
             <div className="bg-neutral-950 p-8 border-t-2 border-[#D4AF37] hover:bg-neutral-900 transition-colors">
               <div className="flex justify-between items-start mb-4">
-                <h4 className="text-xl font-bold text-white">Israel</h4>
+                <h4 className="text-xl font-bold text.white">Israel</h4>
                 <Globe className="text-[#D4AF37] w-5 h-5" />
               </div>
-              <p className="text-neutral-400 text-sm">Desarrollo Económico Local y Estrategias.</p>
+              <p className="text-neutral-400 text.sm">Desarrollo Económico Local y Estrategias.</p>
             </div>
 
-            {/* Internacional 3 - Estados Unidos */}
             <div className="bg-neutral-950 p-8 border-t-2 border-[#D4AF37] hover:bg-neutral-900 transition-colors">
               <div className="flex justify-between items-start mb-4">
-                <h4 className="text-xl font-bold text-white">Estados Unidos</h4>
+                <h4 className="text-xl font-bold text.white">Estados Unidos</h4>
                 <Globe className="text-[#D4AF37] w-5 h-5" />
               </div>
-              <p className="text-neutral-400 text-sm">Excelencia en Gestión de Adquisiciones.</p>
+              <p className="text-neutral-400 text.sm">Excelencia en Gestión de Adquisiciones.</p>
             </div>
           </div>
 
-          {/* Formación académica detallada */}
           <div className="mt-12 grid md:grid-cols-3 gap-6">
             <div className="bg-neutral-950 p-6 border border-neutral-800">
-              <h4 className="text-white font-serif font-bold mb-2">Masterado en Derecho Penal</h4>
-              <p className="text-neutral-400 text-sm">Universidad Americana – Paraguay</p>
+              <h4 className="text.white font-serif font-bold mb-2">Masterado en Derecho Penal</h4>
+              <p className="text-neutral-400 text.sm">Universidad Americana – Paraguay</p>
               <span className="inline-block mt-2 text-[#D4AF37] text-xs font-bold px-2 py-0.5 border border-[#D4AF37] rounded">
                 EN CURSO
               </span>
             </div>
             <div className="bg-neutral-950 p-6 border border-neutral-800">
-              <h4 className="text-white font-serif font-bold mb-2">Abogado</h4>
-              <p className="text-neutral-400 text-sm">Universidad Politécnica y Artística del Paraguay</p>
+              <h4 className="text.white font-serif font-bold mb-2">Abogado</h4>
+              <p className="text-neutral-400 text.sm">Universidad Politécnica y Artística del Paraguay</p>
             </div>
             <div className="bg-neutral-950 p-6 border border-neutral-800">
-              <h4 className="text-white font-serif font-bold mb-2">Didáctica Universitaria</h4>
-              <p className="text-neutral-400 text-sm">Universidad Leonardo Da Vinci</p>
+              <h4 className="text.white font-serif font-bold mb-2">Didáctica Universitaria</h4>
+              <p className="text-neutral-400 text.sm">Universidad Leonardo Da Vinci</p>
             </div>
           </div>
         </div>
@@ -564,41 +499,38 @@ export default function App() {
               className="flex flex-col items-center justify-center p-8 bg-neutral-900 border border-neutral-800 hover:border-[#D4AF37] transition-all group rounded-sm w-full max-w-md"
             >
               <Phone className="w-10 h-10 text-[#D4AF37] mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-white font-bold text-lg mb-1">Llamada / WhatsApp</h3>
+              <h3 className="text.white font-bold text-lg mb-1">Llamada / WhatsApp</h3>
               <p className="text-[#D4AF37] font-mono text-xl">0987 226 345</p>
-              <p className="text-neutral-500 text-sm mt-2">Respuesta Inmediata</p>
+              <p className="text-neutral-500 text.sm mt-2">Respuesta Inmediata</p>
             </a>
           </div>
 
-          {/* Dirección y horarios */}
           <div className="mt-8 grid md:grid-cols-3 gap-6">
             <div className="bg-neutral-900 border border-neutral-800 p-6 text-center">
               <MapPin className="w-6 h-6 text-[#D4AF37] mb-2 mx-auto" />
               <p className="text-neutral-300">Estanzuela – Barrio Cerrado Ecos del Lago</p>
-              <p className="text-neutral-500 text-sm">Areguá, Paraguay – Atención en Asunción y alcance nacional</p>
+              <p className="text-neutral-500 text.sm">Areguá, Paraguay – Atención en Asunción y alcance nacional</p>
             </div>
             <div className="bg-neutral-900 border border-neutral-800 p-6">
               <ClockIcon />
               <p className="text-neutral-300">Horarios de atención</p>
-              <p className="text-neutral-500 text-sm">Lunes a viernes – Horario a coordinar</p>
-              <p className="text-neutral-500 text-sm">Atención con cita previa</p>
+              <p className="text-neutral-500 text.sm">Lunes a viernes – Horario a coordinar</p>
+              <p className="text-neutral-500 text.sm">Atención con cita previa</p>
             </div>
             <div className="bg-neutral-900 border border-neutral-800 p-6">
               <MailIcon />
               <p className="text-neutral-300">Correo profesional</p>
-              <p className="text-neutral-500 text-sm">raifernandez70@gmail.com</p>
+              <p className="text-neutral-500 text.sm">raifernandez70@gmail.com</p>
             </div>
           </div>
 
-          {/* Replace email CTA with WhatsApp CTA */}
-          <div className="bg-[#25D366] text-black p-1 rounded inline-block mt-6">
+          <div className="bg-[#25D366] text.black p-1 rounded inline-block mt-6">
             <a
               href={whatsappLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="block bg-black text-[#25D366] px-8 py-3 font-bold hover:bg-neutral-900 transition-colors uppercase tracking-widest text-sm flex items-center justify-center gap-2"
+              className="block bg-black text-[#25D366] px-8 py-3 font-bold hover:bg-neutral-900 transition-colors uppercase tracking-widest text.sm flex items-center justify-center gap-2"
             >
-              {/* official WhatsApp logo */}
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
                 alt="WhatsApp"
@@ -608,7 +540,6 @@ export default function App() {
             </a>
           </div>
 
-          {/* Embedded Google Map */}
           <div className="mt-8">
             <div className="text-neutral-300 mb-2">
               Estanzuela – Barrio Cerrado Ecos del Lago<br />
@@ -633,15 +564,14 @@ export default function App() {
       <section id="oficinas" className="py-24 bg-neutral-950 border-t border-neutral-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center text-center mb-8">
-            <span className="text-[#D4AF37] font-bold text-sm tracking-widest uppercase">Nuestras Oficinas</span>
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mt-2">Centro de Consultoría</h2>
-            <p className="text-neutral-400 text-sm mt-3 max-w-2xl">
+            <span className="text-[#D4AF37] font-bold text.sm tracking-widest uppercase">Nuestras Oficinas</span>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text.white mt-2">Centro de Consultoría</h2>
+            <p className="text-neutral-400 text.sm mt-3 max-w-2xl">
               Visítenos en Estanzuela – Barrio Cerrado Ecos del Lago, Areguá. Atención con cita previa.
             </p>
           </div>
 
           <div className="relative w-full overflow-hidden bg-black border border-neutral-800">
-            {/* cambiado: formato vertical 9:16 + centrado y ancho máximo */}
             <div className="aspect-[9/16] w-full max-w-[420px] md:max-w-[500px] mx-auto bg-neutral-900">
               <video
                 className="w-full h-full object-cover object-center"
@@ -665,7 +595,7 @@ export default function App() {
       {/* --- IDIOMAS --- */}
       <section className="py-16 bg-neutral-950 border-t border-neutral-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h3 className="text-white font-serif font-bold text-2xl mb-6">Idiomas</h3>
+          <h3 className="text.white font-serif font-bold text-2xl mb-6">Idiomas</h3>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="bg-neutral-900 border border-neutral-800 p-4">
               <p className="text-neutral-300">Español – Avanzado</p>
@@ -683,19 +613,17 @@ export default function App() {
           <div className="text-center md:text-left">
             <div className="flex items-center gap-3 justify-center md:justify-start mb-2">
               <div className="h-10 w-10 bg-black border border-[#D4AF37] rounded flex items-center justify-center overflow-hidden">
-                {/* replaced icon with image */}
                 <img
                   src={`${base}images/libra.png${v}`}
                   alt="Logo Abg. Raimundo Fernández"
                   className="w-full h-full object-contain select-none pointer-events-none"
                 />
               </div>
-              <span className="text-white font-bold font-serif uppercase tracking-wider">
+              <span className="text.white font-bold font-serif uppercase tracking-wider">
                 Abg. Raimundo Fernández
               </span>
             </div>
             <p className="text-neutral-500 text-xs tracking-widest">Centro de Consultoría Jurídica y Empresarial</p>
-            {/* Social icons under name and subtitle (left column) */}
             <div className="mt-3 flex items-center gap-4 justify-center md:justify-start">
               <a
                 href="https://www.facebook.com/raimundo.fernandez.52"
@@ -755,10 +683,9 @@ export default function App() {
         href={whatsappLink}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#1db854] text-white p-4 rounded-full shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform duration-300 flex items-center justify-center border-2 border-black"
+        className="fixed bottom-6 right-6 z-50 bg-[#25D366] hover:bg-[#1db854] text.white p-4 rounded-full shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform duration-300 flex items-center justify-center border-2 border-black"
         aria-label="Contactar por WhatsApp"
       >
-        {/* official WhatsApp logo */}
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
           alt="WhatsApp"
