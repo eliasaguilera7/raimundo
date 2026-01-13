@@ -86,6 +86,9 @@ export default function App() {
   );
   // const whatsappMapLink = `${whatsappLink}?text=${whatsappMapText}`; // (si lo querés usar luego)
 
+  const showBannerDemo =
+    import.meta.env.DEV || String(import.meta.env.VITE_SHOW_BANNER_DEMO) === 'true';
+
   return (
     <div className="font-sans text-neutral-200 bg-black min-h-screen selection:bg-[#D4AF37] selection:text-black">
       {/* --- NAVBAR --- */}
@@ -177,8 +180,8 @@ export default function App() {
         scrollToSection={scrollToSection}
       />
 
-      {/* Demo toggle (solo dev) */}
-      {import.meta.env.DEV && (
+      {/* Demo toggle */}
+      {showBannerDemo && (
         <div className="fixed bottom-24 left-6 z-50 bg-black/90 border border-[#D4AF37]/40 rounded-sm p-3 space-y-2 shadow-2xl">
           <p className="text-[#D4AF37] text-[10px] uppercase tracking-widest font-bold">
             Banner demo
