@@ -11,6 +11,8 @@ import {
   Globe,
   BookOpen,
   ShieldCheck,
+  Facebook,
+  Instagram,
 } from 'lucide-react';
 
 export default function App() {
@@ -24,18 +26,41 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // set favicon from /images/libra.png
+  // set favicon from /images/libra.png (force refresh, remove old links)
   useEffect(() => {
-    const head = document.head;
-    let link = head.querySelector("link[rel='icon']") || head.querySelector("link[rel='shortcut icon']");
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      head.appendChild(link);
-    }
-    link.type = 'image/png';
-    link.href = '/images/libra.png';
+    const base = import.meta.env.BASE_URL;
+    const href = `${base}images/libra.png?v=${__BUILD_TIME__}`;
+
+    // remove any existing icon links so browser can't keep older one
+    const selectors = [
+      "link[rel='icon']",
+      "link[rel='shortcut icon']",
+      "link[rel='apple-touch-icon']",
+      "link[rel*='icon']"
+    ];
+    document.querySelectorAll(selectors.join(',')).forEach((n) => n.parentNode?.removeChild(n));
+
+    const makeLink = (rel, sizes) => {
+      const l = document.createElement('link');
+      l.rel = rel;
+      if (sizes) l.sizes = sizes;
+      l.type = 'image/png';
+      l.href = href;
+      document.head.appendChild(l);
+      return l;
+    };
+
+    // add common favicon links
+    makeLink('icon', '32x32');
+    makeLink('icon', '16x16');
+    makeLink('shortcut icon');
+    makeLink('apple-touch-icon');
   }, []);
+
+  // prefix for local assets when deployed under a subpath
+  const base = import.meta.env.BASE_URL;
+  // cache-busting query for local images
+  const v = `?v=${__BUILD_TIME__}`;
 
   const scrollToSection = (id) => {
     setIsMenuOpen(false);
@@ -43,7 +68,7 @@ export default function App() {
     if (element) element.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const whatsappLink = 'https://wa.me/595984167624';
+  const whatsappLink = 'https://wa.me/595987226345';
 
   // Pre-filled WhatsApp message with Google Maps query to the address
   const mapsUrl =
@@ -67,11 +92,16 @@ export default function App() {
           {/* Logo / Nombre */}
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => scrollToSection('inicio')}>
             <div className="h-12 w-12 rounded-lg overflow-hidden border border-[#D4AF37]/50 shadow-[0_0_15px_rgba(212,175,55,0.3)] bg-black flex items-center justify-center">
-              <Scale className="w-8 h-8 text-[#D4AF37]" />
+              {/* replaced icon with image */}
+              <img
+                src={`${base}images/libra.png${v}`}
+                alt="Logo Abg. Raimundo Fernández"
+                className="w-full h-full object-cover select-none pointer-events-none"
+              />
             </div>
             <div>
               <h1 className="text-lg md:text-xl font-bold tracking-wider text-white uppercase font-serif leading-none">
-                Raimundo Fernández
+                Abg. Raimundo Fernández
               </h1>
               <p className="text-[10px] md:text-xs text-[#D4AF37] tracking-[0.25em] uppercase font-bold mt-1">
                 Abogado Penalista
@@ -139,8 +169,8 @@ export default function App() {
           {/* Marca de agua del logo */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <img
-              src="/images/logoraimundo.png"  // si tu archivo está en /imagenes/, cambia a "/imagenes/logoraimundo.png"
-              alt="Marca de agua - Logo Raimundo Fernández"
+              src={`${base}images/logoraimundo.png${v}`}
+              alt="Marca de agua - Logo Abg. Raimundo Fernández"
               className="opacity-10 w-[70vw] max-w-[560px] object-contain select-none"
             />
           </div>
@@ -157,14 +187,13 @@ export default function App() {
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold font-serif leading-tight text-white">
-              Justicia Penal <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B6914] via-[#D4AF37] to-[#FFD700]">
-                Rigor & Excelencia
+                Soluciones Jurídicas en Derecho Penal y Consultoría Legal
               </span>
             </h1>
 
             <p className="text-lg text-neutral-400 max-w-lg leading-relaxed border-l-4 border-[#D4AF37] pl-6 italic">
-              "Sos un defensor de la ley y de la vida. Acompaño a personas en situaciones complejas con estrategia
+              "Soy un defensor de la ley y de la vida. Acompaño a personas en situaciones complejas con estrategia
               jurídica y dignidad humana."
             </p>
 
@@ -192,18 +221,21 @@ export default function App() {
               <div className="absolute -bottom-4 -left-4 w-full h-full border border-[#D4AF37]/50 -z-10"></div>
 
               <div className="w-full h-full bg-neutral-900 overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-700">
+                {/* show full image without cropping */}
                 <img
-                  src="/images/hero1.webp"
-                  alt="Abg. Raimundo Fernández Alfonso"
-                  className="w-full h-full object-cover"
+                  key={__BUILD_TIME__}
+                  src={`${base}images/hero5.png${v}`}
+                  alt="Abg. Raimundo Fernández"
+                  className="w-full h-full object-contain object-center"
                   onError={(e) => {
+                    console.warn('Hero image failed to load:', `${base}images/hero5.png${v}`);
                     e.currentTarget.src =
                       'https://images.unsplash.com/photo-1556157382-97eda2d62296?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
                   }}
                 />
                 <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/80 to-transparent p-6 pt-12">
                   <div className="h-0.5 w-16 bg-[#D4AF37] mb-3"></div>
-                  <p className="text-white font-serif text-2xl font-bold">Raimundo Fernández</p>
+                  <p className="text-white font-serif text-2xl font-bold">Abg. Raimundo Fernández</p>
                   <p className="text-[#D4AF37] text-xs font-bold tracking-widest uppercase mt-1">
                     Director & Fundador
                   </p>
@@ -247,7 +279,7 @@ export default function App() {
               </h2>
               {/* Encabezado premium */}
               <div className="text-neutral-300">
-                <p className="font-serif text-xl font-bold">ABG. RAIMUNDO FERNÁNDEZ ALFONSO</p>
+                <p className="font-serif text-xl font-bold">Abg. Raimundo Fernández</p>
                 <p className="text-sm text-[#D4AF37] font-bold tracking-widest">
                   Abogado | Matrícula C.S.J. N.º 66.875
                 </p>
@@ -262,7 +294,7 @@ export default function App() {
               {/* Restored descriptive content */}
               <div className="space-y-6 text-neutral-400 leading-relaxed font-light">
                 <p>
-                  Mi nombre es <strong>Raimundo Fernández Alfonso</strong>. Soy un abogado penalista comprometido no
+                  Mi nombre es <strong>Abg. Raimundo Fernández</strong>. Soy un abogado penalista comprometido no
                   solo con el rigor técnico del Derecho, sino con la justicia en su sentido más amplio. Mi práctica se
                   basa en el estudio constante —cursando actualmente un Masterado en Derecho Penal— y en una defensa
                   apasionada.
@@ -299,8 +331,8 @@ export default function App() {
 
                 <div className="w-full h-full bg-neutral-900 overflow-hidden relative grayscale hover:grayscale-0 transition-all duration-700">
                   <img
-                    src="/images/hero2.png"
-                    alt="Perfil - Raimundo Fernández Alfonso"
+                    src={`${base}images/diploma.jpeg${v}`}
+                    alt="Diploma - Abg. Raimundo Fernández"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.currentTarget.src =
@@ -323,8 +355,12 @@ export default function App() {
           <div className="mt-16 relative">
             <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37] to-neutral-900 opacity-20 blur-2xl"></div>
             <div className="relative bg-neutral-950 border border-neutral-800 p-8 rounded-sm shadow-2xl">
-              <Scale className="w-16 h-16 text-[#D4AF37] mb-6" />
-              <h3 className="text-xl font-bold text-white mb-2 font-serif">Filosofía de Defensa</h3>
+              <img
+                src={`${base}images/libra.png${v}`}
+                alt="Icono - Filosofía de Defensa"
+                className="w-16 h-16 mb-6 object-contain"
+              />
+              <h3 className="text-xl font-bold text.white mb-2 font-serif">Filosofía de Defensa</h3>
               <p className="text-neutral-500 text-sm mb-6">
                 "Una defensa firme, ética y orientada a resultados concretos."
               </p>
@@ -354,7 +390,7 @@ export default function App() {
         <div
           className="absolute inset-x-0 -mt-24 h-64 md:h-80 opacity-70"
           style={{
-            backgroundImage: "url('/images/hero4.png')",
+            backgroundImage: `url(${base}images/hero4.png${v})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
@@ -522,32 +558,16 @@ export default function App() {
       {/* --- CONTACTO --- */}
       <section id="contacto" className="py-24 bg-black border-t border-neutral-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
+          <div className="grid grid-cols-1 place-items-center gap-6 mb-12">
             <a
               href={whatsappLink}
-              className="flex flex-col items-center justify-center p-8 bg-neutral-900 border border-neutral-800 hover:border-[#D4AF37] transition-all group rounded-sm"
+              className="flex flex-col items-center justify-center p-8 bg-neutral-900 border border-neutral-800 hover:border-[#D4AF37] transition-all group rounded-sm w-full max-w-md"
             >
               <Phone className="w-10 h-10 text-[#D4AF37] mb-4 group-hover:scale-110 transition-transform" />
               <h3 className="text-white font-bold text-lg mb-1">Llamada / WhatsApp</h3>
-              <p className="text-[#D4AF37] font-mono text-xl">+595 984 167 624</p>
+              <p className="text-[#D4AF37] font-mono text-xl">0987 226 345</p>
               <p className="text-neutral-500 text-sm mt-2">Respuesta Inmediata</p>
             </a>
-
-            <div className="flex flex-col items-center justify-center p-8 bg-neutral-900 border border-neutral-800 hover:border-[#D4AF37] transition-all group rounded-sm">
-              <MapPin className="w-10 h-10 text-[#D4AF37] mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-white font-bold text-lg mb-1">Estudio Jurídico</h3>
-              <p className="text-neutral-300">Barrio Cerrado Ecos del Lago</p>
-              <p className="text-neutral-500 text-sm mt-2">Areguá, Paraguay</p>
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
-            <div className="flex flex-col items-center justify-center p-8 bg-neutral-900 border border-neutral-800 hover:border-[#D4AF37] transition-all group rounded-sm">
-              <Phone className="w-10 h-10 text-[#D4AF37] mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="text-white font-bold text-lg mb-1">Teléfono Alternativo</h3>
-              <p className="text-[#D4AF37] font-mono text-xl">+595 987 226 345</p>
-              <p className="text-neutral-500 text-sm mt-2">Llamadas y WhatsApp</p>
-            </div>
           </div>
 
           {/* Dirección y horarios */}
@@ -609,6 +629,39 @@ export default function App() {
         </div>
       </section>
 
+      {/* --- NUESTRAS OFICINAS (VIDEO) --- */}
+      <section id="oficinas" className="py-24 bg-neutral-950 border-t border-neutral-900">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center text-center mb-8">
+            <span className="text-[#D4AF37] font-bold text-sm tracking-widest uppercase">Nuestras Oficinas</span>
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-white mt-2">Centro de Consultoría</h2>
+            <p className="text-neutral-400 text-sm mt-3 max-w-2xl">
+              Visítenos en Estanzuela – Barrio Cerrado Ecos del Lago, Areguá. Atención con cita previa.
+            </p>
+          </div>
+
+          <div className="relative w-full overflow-hidden bg-black border border-neutral-800">
+            {/* cambiado: formato vertical 9:16 + centrado y ancho máximo */}
+            <div className="aspect-[9/16] w-full max-w-[420px] md:max-w-[500px] mx-auto bg-neutral-900">
+              <video
+                className="w-full h-full object-cover object-center"
+                autoPlay
+                muted
+                loop
+                playsInline
+                controls={false}
+                preload="metadata"
+                poster={`${base}images/hero4.png${v}`}
+              >
+                <source src={`${base}videos/video1.mp4${v}`} type="video/mp4" />
+                Su navegador no soporta la reproducción de video.
+              </video>
+            </div>
+            <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-neutral-800/60"></div>
+          </div>
+        </div>
+      </section>
+
       {/* --- IDIOMAS --- */}
       <section className="py-16 bg-neutral-950 border-t border-neutral-900">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -629,16 +682,57 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-center md:text-left">
             <div className="flex items-center gap-3 justify-center md:justify-start mb-2">
-              <div className="h-8 w-8 bg-black border border-[#D4AF37] rounded flex items-center justify-center overflow-hidden">
-                <Scale className="w-5 h-5 text-[#D4AF37]" />
+              <div className="h-10 w-10 bg-black border border-[#D4AF37] rounded flex items-center justify-center overflow-hidden">
+                {/* replaced icon with image */}
+                <img
+                  src={`${base}images/libra.png${v}`}
+                  alt="Logo Abg. Raimundo Fernández"
+                  className="w-full h-full object-contain select-none pointer-events-none"
+                />
               </div>
               <span className="text-white font-bold font-serif uppercase tracking-wider">
-                Raimundo Fernández Alfonso
+                Abg. Raimundo Fernández
               </span>
             </div>
             <p className="text-neutral-500 text-xs tracking-widest">Centro de Consultoría Jurídica y Empresarial</p>
+            {/* Social icons under name and subtitle (left column) */}
+            <div className="mt-3 flex items-center gap-4 justify-center md:justify-start">
+              <a
+                href="https://www.facebook.com/raimundo.fernandez.52"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="text-neutral-500 hover:text-[#D4AF37] transition-colors hover:scale-110"
+                title="Facebook"
+              >
+                <Facebook className="w-7 h-7" />
+              </a>
+              <a
+                href="https://www.instagram.com/raimundofer10/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-neutral-500 hover:text-[#D4AF37] transition-colors hover:scale-110"
+                title="Instagram"
+              >
+                <Instagram className="w-7 h-7" />
+              </a>
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="transition-transform hover:scale-110"
+                title="WhatsApp"
+              >
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
+                  alt="WhatsApp"
+                  className="w-7 h-7"
+                />
+              </a>
+            </div>
           </div>
-
           <div className="text-neutral-600 text-[10px] text-center md:text-right space-y-1 uppercase tracking-widest">
             <p>&copy; {new Date().getFullYear()} Todos los derechos reservados.</p>
             <p className="text-[#D4AF37]/50">Matrícula C.S.J. N.º 66.875</p>
