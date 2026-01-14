@@ -19,7 +19,7 @@ import Banner from './components/Banner/Banner';
 export default function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [bannerVariant, setBannerVariant] = useState('A'); // A = oficial (intacto)
+  const [bannerVariant, setBannerVariant] = useState('C'); // using BannerC as hero for now
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -179,30 +179,6 @@ export default function App() {
         whatsappLink={whatsappLink}
         scrollToSection={scrollToSection}
       />
-
-      {/* Demo toggle */}
-      {showBannerDemo && (
-        <div className="fixed bottom-24 left-6 z-50 bg-black/90 border border-[#D4AF37]/40 rounded-sm p-3 space-y-2 shadow-2xl">
-          <p className="text-[#D4AF37] text-[10px] uppercase tracking-widest font-bold">
-            Banner demo
-          </p>
-          <div className="flex gap-2">
-            {['A', 'B', 'C', 'D'].map((vKey) => (
-              <button
-                key={vKey}
-                onClick={() => setBannerVariant(vKey)}
-                className={`px-3 py-1 text-[10px] border uppercase tracking-widest font-bold transition-colors ${
-                  bannerVariant === vKey
-                    ? 'bg-[#D4AF37] text-black border-[#D4AF37]'
-                    : 'border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37]/10'
-                }`}
-              >
-                {vKey}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* --- CINTA DE PRESTIGIO --- */}
       <div className="border-y border-[#D4AF37]/20 bg-neutral-900/50 backdrop-blur-sm">
@@ -462,14 +438,6 @@ export default function App() {
                 <Globe className="text-[#D4AF37] w-5 h-5" />
               </div>
               <p className="text-neutral-400 text.sm">Desarrollo Económico Local y Estrategias.</p>
-            </div>
-
-            <div className="bg-neutral-950 p-8 border-t-2 border-[#D4AF37] hover:bg-neutral-900 transition-colors">
-              <div className="flex justify-between items-start mb-4">
-                <h4 className="text-xl font-bold text.white">Estados Unidos</h4>
-                <Globe className="text-[#D4AF37] w-5 h-5" />
-              </div>
-              <p className="text-neutral-400 text.sm">Excelencia en Gestión de Adquisiciones.</p>
             </div>
           </div>
 

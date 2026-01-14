@@ -28,7 +28,7 @@ export default function BannerC({ base, v, whatsappLink, scrollToSection }) {
       <div className="relative z-10 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center md:min-h-[calc(100vh-5rem)]">
         {/* Copy */}
         <div>
-          <p className="text-[#D4AF37] text-xs font-bold tracking-widest uppercase">
+          <p className="mt-6 md:mt-10 text-[#D4AF37] text-xs font-bold tracking-widest uppercase">
             Matrícula C.S.J. N.º 66.875
           </p>
           <h1 className="mt-4 text-4xl md:text-6xl font-bold font-serif leading-tight text-white">
