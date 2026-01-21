@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   plugins: [tailwindcss(), react()],
-  base: '/raimundo/',
+  base: '/',
   define: {
     __BUILD_TIME__: JSON.stringify(Date.now()),
   },
